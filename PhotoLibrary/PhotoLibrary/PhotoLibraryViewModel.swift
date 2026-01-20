@@ -7,9 +7,11 @@
 
 import Foundation
 import Photos
+import PhotosUI
 import SwiftUI
 
 protocol PhotoLibraryViewModelProtocol: ObservableObject {
+    var viewState: ViewState { get set }
     var authorizationStatus: PHAuthorizationStatus { get set }
     var photosInRecentAlbum: PHFetchResultCollection { get set }
     var allAlbums: [PHAssetCollection] { get set }
@@ -26,11 +28,14 @@ protocol PhotoLibraryViewModelProtocol: ObservableObject {
     
     func showImage(image: UIImage)
     func goToAlbums()
+    
+    func openSettings()
 }
 
 class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
+    var viewState: ViewState = .info
     @Published var authorizationStatus = PHAuthorizationStatus.notDetermined
-
+    
     @Published var photosInRecentAlbum: PHFetchResultCollection = .init(fetchResult: .init())
     @Published var allAlbums: [PHAssetCollection] = []
     @Published var customAlbums: PHFetchResult<PHAssetCollection> = .init()
@@ -41,9 +46,9 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
                                                                     .smartAlbumSlomoVideos]
     @Published var titles: [String] = []
     @Published var selectedAlbum: PHAssetCollection?
-
+    
     private weak var coordinator: PhotoLibraryCoordiantor?
-
+    
     init(coordinator: PhotoLibraryCoordiantor?) {
         self.coordinator = coordinator
         authorizationStatus = PHPhotoLibrary.authorizationStatus()
@@ -55,6 +60,8 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
                 self?.authorizationStatus = status
                 if status == .authorized || status == .limited {
                     self?.getPhotosLibraries()
+                } else {
+                    self?.viewState = .error
                 }
             }
         }
@@ -86,6 +93,7 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
             }
         }
         selectedAlbum = allAlbums.first
+        viewState = .info
     }
     
     func getThumbnail(asset: PHAsset, size: CGSize) -> UIImage? {
@@ -141,5 +149,16 @@ extension PhotoLibraryViewModel {
     
     func showImage(image: UIImage) {
         coordinator?.navigate(to: .show(image))
+    }
+    
+    func openSettings() {
+        guard let settingsUrl = URL(string: "App-prefs:com.app.PhotoLibrary") else {
+            return
+        }
+        if UIApplication.shared.canOpenURL(settingsUrl) {
+            UIApplication.shared.open(settingsUrl, completionHandler: { (success) in
+                
+            })
+        }
     }
 }

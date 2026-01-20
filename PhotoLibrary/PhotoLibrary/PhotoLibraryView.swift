@@ -19,6 +19,23 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
     
     var body: some View {
         VStack(alignment: .leading) {
+            if viewModel.viewState == .error {
+                alertView()
+            } else {
+                photosView()
+            }
+        }
+        .padding()
+        .onAppear {
+            viewModel.getPhotosPermission()
+        }
+        .onChange(of: viewModel.selectedAlbum) { _, _ in
+            viewModel.updatePictures()
+        }
+    }
+    
+    func photosView() -> some View {
+        VStack(alignment: .leading) {
             Button {
                 viewModel.goToAlbums()
             } label: {
@@ -52,12 +69,28 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
                 })
             }
         }
-        .padding()
-        .onAppear {
-            viewModel.getPhotosPermission()
-        }
-        .onChange(of: viewModel.selectedAlbum) { _, _ in
-            viewModel.updatePictures()
+    }
+    
+    func alertView() -> some View {
+        VStack(spacing: 16) {
+            Image(systemName: "exclamationmark.circle.fill")
+                .resizable()
+                .frame(width: 80, height: 80)
+                .foregroundStyle(Color.red)
+            Text("Give permission to access your photo library")
+            Button {
+                viewModel.openSettings()
+            } label: {
+                Text("Settings")
+                    .font(.title)
+                    .fontWeight(.bold)
+                    .foregroundStyle(Color(uiColor: .systemBackground))
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.primary)
+                    )
+            }
         }
     }
 }
