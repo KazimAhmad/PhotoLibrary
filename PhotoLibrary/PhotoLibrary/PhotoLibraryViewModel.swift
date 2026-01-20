@@ -22,6 +22,7 @@ protocol PhotoLibraryViewModelProtocol: ObservableObject {
     var selectedAlbum: PHAssetCollection? { get set }
 
     func getThumbnail(asset: PHAsset, size: CGSize) -> UIImage?
+    func updatePictures()
     
     func showImage(image: UIImage)
     func goToAlbums()
@@ -59,7 +60,8 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
         }
     }
     
-    func getPhotosLibraries() {        
+    func getPhotosLibraries() {
+        if allAlbums.count > 0 { return }
         for fetchedAlbumType in fetchedAlbumTypes {
             if let album = PHAssetCollection.fetchAssetCollections(with: .smartAlbum, subtype: fetchedAlbumType, options: nil).firstObject {
                 allAlbums.append(album)
@@ -83,7 +85,6 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
                 titles.append(album.localizedTitle ?? "")
             }
         }
-        print(titles)
         selectedAlbum = allAlbums.first
     }
     
@@ -103,11 +104,42 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
         return imageToReturn
     }
     
-    func showImage(image: UIImage) {
-        coordinator?.navigate(to: .show(image))
+    func updatePictures() {
+        guard let selectedAlbum = selectedAlbum else {
+            return
+        }
+        let fetchOptions = PHFetchOptions()
+        let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false)
+        fetchOptions.sortDescriptors = [sortDescriptor]
+        let fetchedAssets = PHAsset.fetchAssets(in: selectedAlbum, options: fetchOptions)
+        photosInRecentAlbum = PHFetchResultCollection(fetchResult: fetchedAssets)
     }
+}
+
+extension PhotoLibraryViewModel {
     
     func goToAlbums() {
-        coordinator?.present(.albums)
+        coordinator?.present(.albums(titles, { [weak self] selectedTitle in
+            guard let self = self else {
+                return
+            }
+            if let albumFromAll = self.allAlbums.first(where: { $0.localizedTitle == selectedTitle }) {
+                self.selectedAlbum = albumFromAll
+                return
+            }
+            if customAlbums.count > 0 {
+                for index in 0 ... customAlbums.count - 1 {
+                    let albumTitle = customAlbums[index].localizedTitle
+                    if albumTitle == selectedTitle {
+                        self.selectedAlbum = customAlbums[index]
+                        return
+                    }
+                }
+            }
+        }))
+    }
+    
+    func showImage(image: UIImage) {
+        coordinator?.navigate(to: .show(image))
     }
 }

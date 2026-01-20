@@ -8,7 +8,7 @@
 import Foundation
 
 enum PhotoLibraryModal: Identifiable {
-    case albums
+    case albums([String], ((String) -> Void))
     var id: String {
         switch self {
         case .albums:

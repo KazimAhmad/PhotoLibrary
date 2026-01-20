@@ -51,8 +51,13 @@ extension PhotoLibraryCoordiantor {
     @ViewBuilder
     func modalView(for modal: PhotoLibraryModal) -> some View {
         switch modal {
-        case .albums:
-            Text("Albums")
+        case .albums(let titles, let didSelectAlbum):
+            AlbumsView(viewModel: AlbumsViewModel(titles: titles,
+                                                  didSelectAlbum: didSelectAlbum,
+                                                  coordinator: self))
+            .background(
+                ClearBackgroundView()
+            )
         }
     }
 }

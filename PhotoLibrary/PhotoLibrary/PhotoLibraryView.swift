@@ -56,6 +56,9 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
         .onAppear {
             viewModel.getPhotosPermission()
         }
+        .onChange(of: viewModel.selectedAlbum) { _, _ in
+            viewModel.updatePictures()
+        }
     }
 }
 
