@@ -18,7 +18,13 @@ protocol PhotoLibraryViewModelProtocol: ObservableObject {
 
     func getPhotosPermission()
     func getPhotosLibraries()
+    var titles: [String] { get set }
+    var selectedAlbum: PHAssetCollection? { get set }
+
     func getThumbnail(asset: PHAsset, size: CGSize) -> UIImage?
+    
+    func showImage(image: UIImage)
+    func goToAlbums()
 }
 
 class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
@@ -32,7 +38,13 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
                                                                     .smartAlbumScreenshots,
                                                                     .smartAlbumVideos,
                                                                     .smartAlbumSlomoVideos]
-    init() {
+    @Published var titles: [String] = []
+    @Published var selectedAlbum: PHAssetCollection?
+
+    private weak var coordinator: PhotoLibraryCoordiantor?
+
+    init(coordinator: PhotoLibraryCoordiantor?) {
+        self.coordinator = coordinator
         authorizationStatus = PHPhotoLibrary.authorizationStatus()
     }
     
@@ -62,6 +74,17 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
         let sortDescriptor = NSSortDescriptor(key: "creationDate", ascending: false)
         fetchOptions.sortDescriptors = [sortDescriptor]
         photosInRecentAlbum = PHFetchResultCollection(fetchResult: PHAsset.fetchAssets(with: fetchOptions))
+        for album in allAlbums {
+            titles.append(album.localizedTitle ?? "")
+        }
+        if customAlbums.count > 0 {
+            for index in 0 ... customAlbums.count - 1 {
+                let album = customAlbums[index]
+                titles.append(album.localizedTitle ?? "")
+            }
+        }
+        print(titles)
+        selectedAlbum = allAlbums.first
     }
     
     func getThumbnail(asset: PHAsset, size: CGSize) -> UIImage? {
@@ -79,19 +102,12 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
         }
         return imageToReturn
     }
-}
-
-struct PHFetchResultCollection: RandomAccessCollection, Equatable {
-    typealias Element = PHAsset
-    typealias Index = Int
-
-    let fetchResult: PHFetchResult<PHAsset>
-
-    var endIndex: Int { fetchResult.count }
-    var startIndex: Int { 0 }
-
-    subscript(position: Int) -> PHAsset {
-        fetchResult.object(at: fetchResult.count - position - 1)
+    
+    func showImage(image: UIImage) {
+        coordinator?.navigate(to: .show(image))
+    }
+    
+    func goToAlbums() {
+        coordinator?.present(.albums)
     }
 }
-

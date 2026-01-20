@@ -18,7 +18,19 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
     }
     
     var body: some View {
-        VStack {
+        VStack(alignment: .leading) {
+            Button {
+                viewModel.goToAlbums()
+            } label: {
+                HStack {
+                    Text(viewModel.selectedAlbum?.localizedTitle ?? "")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                    Image(systemName: "chevron.down")
+                }
+                .foregroundStyle(Color.primary)
+            }
+
             ScrollView {
                 LazyVGrid(columns: columns,
                           alignment: .center,
@@ -32,6 +44,9 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
                             Image(uiImage: image)
                                 .resizable()
                                 .frame(height: 200)
+                                .onTapGesture {
+                                    viewModel.showImage(image: image)
+                                }
                         }
                     }
                 })
@@ -45,5 +60,5 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
 }
 
 #Preview {
-    PhotoLibraryView(viewModel: PhotoLibraryViewModel())
+    PhotoLibraryView(viewModel: PhotoLibraryViewModel(coordinator: PhotoLibraryCoordiantor()))
 }
