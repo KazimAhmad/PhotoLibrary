@@ -36,6 +36,7 @@ protocol PhotoLibraryViewModelProtocol: ObservableObject {
     func goToAlbums()
     
     func openSettings()
+    func goToSelectedImages()
 }
 
 class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
@@ -180,5 +181,9 @@ extension PhotoLibraryViewModel {
                 
             })
         }
+    }
+    
+    func goToSelectedImages() {
+        coordinator?.navigate(to: .selectedImages(selectedImages))
     }
 }

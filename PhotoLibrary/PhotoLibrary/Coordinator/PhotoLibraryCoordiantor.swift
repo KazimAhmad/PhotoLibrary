@@ -43,6 +43,9 @@ class PhotoLibraryCoordiantor: ObservableObject, PhotoLibraryCoordiantorProtocol
             case .show(let image):
             Image(uiImage: image)
                 .resizable()
+            case .selectedImages(let images):
+            SelectedImagesView(viewModel: SelectedImagesViewModel(selectedImages: images,
+                                                                  coordinator: self))
         }
     }
 }

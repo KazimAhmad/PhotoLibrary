@@ -132,7 +132,7 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
         HStack {
             Spacer()
             Button {
-                
+                viewModel.goToSelectedImages()
             } label: {
                 Image(systemName: "arrow.right")
                     .resizable()

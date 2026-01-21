@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import Photos
 import SwiftUI
 
 public enum PhotoLibraryRoute: Hashable {
     case show(UIImage)
+    case selectedImages([PHAsset])
 }
