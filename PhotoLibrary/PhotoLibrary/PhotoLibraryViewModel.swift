@@ -18,10 +18,16 @@ protocol PhotoLibraryViewModelProtocol: ObservableObject {
     var customAlbums: PHFetchResult<PHAssetCollection> { get set }
     var fetchedAlbumTypes: [PHAssetCollectionSubtype] { get set }
 
-    func getPhotosPermission()
-    func getPhotosLibraries()
     var titles: [String] { get set }
     var selectedAlbum: PHAssetCollection? { get set }
+
+    var selection: Bool { get set }
+    var selectedImages: [PHAsset] { get set }
+    func imageSelection(for photo: PHAsset)
+    func isSelected(photo: PHAsset) -> Bool
+
+    func getPhotosPermission()
+    func getPhotosLibraries()
 
     func getThumbnail(asset: PHAsset, size: CGSize) -> UIImage?
     func updatePictures()
@@ -46,6 +52,8 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
                                                                     .smartAlbumSlomoVideos]
     @Published var titles: [String] = []
     @Published var selectedAlbum: PHAssetCollection?
+    @Published var selection: Bool = false
+    @Published var selectedImages: [PHAsset] = []
     
     private weak var coordinator: PhotoLibraryCoordiantor?
     
@@ -121,6 +129,18 @@ class PhotoLibraryViewModel: PhotoLibraryViewModelProtocol {
         fetchOptions.sortDescriptors = [sortDescriptor]
         let fetchedAssets = PHAsset.fetchAssets(in: selectedAlbum, options: fetchOptions)
         photosInRecentAlbum = PHFetchResultCollection(fetchResult: fetchedAssets)
+    }
+    
+    func imageSelection(for photo: PHAsset) {
+        if selectedImages.first(where: { $0.localIdentifier == photo.localIdentifier }) == nil {
+            selectedImages.append(photo)
+        } else {
+            selectedImages.removeAll() { $0.localIdentifier == photo.localIdentifier }
+        }
+    }
+    
+    func isSelected(photo: PHAsset) -> Bool {
+        return selectedImages.first(where: { $0.localIdentifier == photo.localIdentifier }) != nil
     }
 }
 

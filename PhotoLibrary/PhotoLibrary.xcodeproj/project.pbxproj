@@ -29,9 +29,22 @@
 		9F57A2AC2F1DEBBD00B19A35 /* PhotoLibraryUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PhotoLibraryUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		9FF755532F1F2FC900554443 /* Exceptions for "PhotoLibrary" folder in "PhotoLibrary" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 9F57A2932F1DEBBC00B19A35 /* PhotoLibrary */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		9F57A2962F1DEBBC00B19A35 /* PhotoLibrary */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				9FF755532F1F2FC900554443 /* Exceptions for "PhotoLibrary" folder in "PhotoLibrary" target */,
+			);
 			path = PhotoLibrary;
 			sourceTree = "<group>";
 		};
@@ -393,7 +406,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Access to photo library to show pictures.";
+				INFOPLIST_FILE = PhotoLibrary/Info.plist;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Access to photo library to show pictures.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Access to photo library to show pictures.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
@@ -434,7 +447,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Access to photo library to show pictures.";
+				INFOPLIST_FILE = PhotoLibrary/Info.plist;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Access to photo library to show pictures.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Access to photo library to show pictures.";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;

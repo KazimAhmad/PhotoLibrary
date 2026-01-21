@@ -23,6 +23,9 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
                 alertView()
             } else {
                 photosView()
+                if viewModel.selectedImages.count > 0 {
+                    nextButtonView()
+                }
             }
         }
         .padding()
@@ -36,17 +39,29 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
     
     func photosView() -> some View {
         VStack(alignment: .leading) {
-            Button {
-                viewModel.goToAlbums()
-            } label: {
-                HStack {
-                    Text(viewModel.selectedAlbum?.localizedTitle ?? "")
-                        .font(.title2)
-                        .fontWeight(.bold)
-                    Image(systemName: "chevron.down")
+            HStack {
+                Button {
+                    viewModel.goToAlbums()
+                } label: {
+                    HStack {
+                        Text(viewModel.selectedAlbum?.localizedTitle ?? "")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                        Image(systemName: "chevron.down")
+                    }
                 }
-                .foregroundStyle(Color.primary)
+                Spacer()
+                Button {
+                    viewModel.selection.toggle()
+                    viewModel.selectedImages.removeAll()
+                } label: {
+                    Image(systemName: "square.on.square")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                    Text("Select")
+                }
             }
+            .foregroundStyle(Color.primary)
 
             ScrollView {
                 LazyVGrid(columns: columns,
@@ -62,7 +77,26 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
                                 .resizable()
                                 .frame(height: 200)
                                 .onTapGesture {
-                                    viewModel.showImage(image: image)
+                                    if viewModel.selection {
+                                        viewModel.imageSelection(for: photo)
+                                    } else {
+                                        viewModel.showImage(image: image)
+                                    }
+                                }
+                                .overlay {
+                                    if viewModel.selection {
+                                        VStack {
+                                            HStack {
+                                                Spacer()
+                                                Image(systemName: viewModel.isSelected(photo: photo) ? "checkmark.circle.fill" : "circle")
+                                                    .resizable()
+                                                    .frame(width: 16, height: 16)
+                                                    .foregroundStyle(Color.blue)
+                                            }
+                                            .padding()
+                                            Spacer()
+                                        }
+                                    }
                                 }
                         }
                     }
@@ -88,6 +122,25 @@ struct PhotoLibraryView<ViewModel: PhotoLibraryViewModelProtocol>: View {
                     .padding()
                     .background(
                         RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.primary)
+                    )
+            }
+        }
+    }
+    
+    func nextButtonView() -> some View {
+        HStack {
+            Spacer()
+            Button {
+                
+            } label: {
+                Image(systemName: "arrow.right")
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                    .foregroundStyle(Color(UIColor.systemBackground))
+                    .padding()
+                    .background(
+                        Circle()
                             .fill(Color.primary)
                     )
             }
