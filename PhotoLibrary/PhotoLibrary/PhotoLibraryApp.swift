@@ -9,9 +9,18 @@ import SwiftUI
 
 @main
 struct PhotoLibraryApp: App {
+    @StateObject var coordinator = PhotoLibraryCoordiantor()
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack(path: $coordinator.path) {
+                PhotoLibraryView(viewModel: PhotoLibraryViewModel(coordinator: coordinator))
+                    .navigationDestination(for: PhotoLibraryRoute.self) { route in
+                        coordinator.destinationView(for: route)
+                    }
+                    .sheet(item: $coordinator.activeModal) { modal in
+                        coordinator.modalView(for: modal)
+                    }
+            }
         }
     }
 }
